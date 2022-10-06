@@ -15,15 +15,19 @@ usersRoute.get('/users', async (req : Request, res: Response, next : NextFunctio
     res.status(statusCodes.OK).json(users)
 });
 
-usersRoute.get('/users/:uuid', (req : Request<{ uuid: String }>, res: Response, next : NextFunction) => {
+usersRoute.get('/users/:uuid', async (req : Request<{ uuid: string }>, res: Response, next : NextFunction) => {
     const uuid = req.params.uuid;
-    res.status(statusCodes.OK).send({ uuid })
+    const user = await usersRepository.findById(uuid);
+    res.status(statusCodes.OK).send(user)
 });
 
-usersRoute.post('/users', (req : Request, res: Response, next : NextFunction) => {
+usersRoute.post('/users', async (req : Request, res: Response, next : NextFunction) => {
     const newUser = req.body;
     console.log(newUser);
-    res.status(statusCodes.CREATED).send(newUser);
+
+    const uuid = await usersRepository.create(newUser);
+
+    res.status(statusCodes.CREATED).send(uuid);
 });
 
 usersRoute.put('/users/:uuid', (req : Request<{ uuid: String }>, res: Response, next : NextFunction) => {
